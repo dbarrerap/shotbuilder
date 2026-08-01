@@ -22,7 +22,8 @@ function validateImported(raw) {
   if (!data || typeof data !== 'object') return 'Missing "data" object';
   for (const cat of CATEGORIES) {
     const items = data[cat.id];
-    if (!Array.isArray(items)) return `Missing or invalid category: ${cat.label}`;
+    if (items === undefined) continue;
+    if (!Array.isArray(items)) return `Invalid category: ${cat.label}`;
     for (const item of items) {
       if (!item || typeof item.id !== 'number' || typeof item.text !== 'string') {
         return `Invalid item in "${cat.label}": each item needs "id" (number) and "text" (string)`;

@@ -15,7 +15,8 @@
     "vestimenta": "Vestimenta",
     "pose": "Pose",
     "escena": "Ubicaci\u00f3n",
-    "camara": "C\u00e1mara"
+    "camara": "C\u00e1mara",
+    "tecnica": "T\u00e9cnica"
   },
   "dashboard": {
     "title": "Panel",

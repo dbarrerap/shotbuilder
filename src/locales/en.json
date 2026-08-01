@@ -15,7 +15,8 @@
     "vestimenta": "Clothing",
     "pose": "Pose",
     "escena": "Location",
-    "camara": "Camera Settings"
+    "camara": "Camera Settings",
+    "tecnica": "Technique"
   },
   "dashboard": {
     "title": "Dashboard",

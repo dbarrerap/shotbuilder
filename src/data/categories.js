@@ -4,6 +4,7 @@ export const CATEGORIES = [
   { id: 'pose', label: 'Pose', baseId: 300 },
   { id: 'escena', label: 'Location', baseId: 400 },
   { id: 'camara', label: 'Camera Settings', baseId: 500 },
+  { id: 'tecnica', label: 'Technique', baseId: 600 },
 ];
 
 export const DEFAULT_DATA = Object.fromEntries(

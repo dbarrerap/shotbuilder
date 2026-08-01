@@ -9,6 +9,7 @@ const CATEGORY_ICONS = {
   pose: 'fa-person-walking',
   escena: 'fa-location-dot',
   camara: 'fa-camera',
+  tecnica: 'fa-paintbrush',
 };
 
 export default function Sidebar({ isOpen, onClose }) {

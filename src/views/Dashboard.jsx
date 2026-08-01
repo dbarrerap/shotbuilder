@@ -12,6 +12,7 @@ const CATEGORY_BORDER_COLORS = {
   pose: 'hsl(45, 70%, 40%)',
   escena: 'hsl(25, 70%, 40%)',
   camara: 'hsl(260, 70%, 40%)',
+  tecnica: 'hsl(320, 70%, 40%)',
 };
 
 const CATEGORY_HUES = {
@@ -20,6 +21,7 @@ const CATEGORY_HUES = {
   pose: 45,
   escena: 25,
   camara: 260,
+  tecnica: 320,
 };
 
 function getIngredientColor(id) {

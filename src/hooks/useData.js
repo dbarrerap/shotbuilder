@@ -108,8 +108,9 @@ export function useData() {
   }, [data, promptHistory, usageStats, persistState]);
 
   const importIngredients = useCallback(async (newData) => {
-    setData(newData);
-    await persistState(newData, promptHistory, usageStats);
+    const normalized = { ...DEFAULT_DATA, ...newData };
+    setData(normalized);
+    await persistState(normalized, promptHistory, usageStats);
   }, [promptHistory, usageStats, persistState]);
 
   const generatePrompt = useCallback((pinnedIds = {}) => {

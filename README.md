@@ -1,44 +1,18 @@
 # ShotBuilder
 
-A React application for building and generating photo prompts by combining random ingredients across categories. Built with Vite, Bootstrap 5, Recharts, and sonner.
+ShotBuilder helps photographers and creators build and generate photo prompts by combining random ingredients across categories. Built with Vite, React, Bootstrap 5, Recharts, and sonner.
 
 ## Features
 
-- **5 fixed categories**: Character, Clothing, Pose, Location, Camera Settings
-- **Ingredient management**: Add, edit (double-click), and delete ingredients per category
-- **CSV import**: Bulk-load ingredients into a category from a CSV file (one ingredient per line, quoted fields supported, optional header row)
-- **Prompt generation**: Picks a random ingredient from each category with frequency-weighted selection (least-used ingredients are more likely to be picked)
-- **Pin to keep**: Click any ingredient ID to pin it — pinned items stay fixed across generations
-- **Usage tracking**: Usage is only registered when you click **Copy**, not on every generate
-- **Toast notifications**: Sonner-powered feedback for Save, Edit, Delete, Copy, and Import actions
-- **Delete confirmation**: Confirms before deleting any ingredient
-- **Persistent storage**: Uses localforage (IndexedDB) to save ingredients, prompt history, and usage statistics
-- **Usage dashboard**: Stacked bar chart with category-based HSL colors showing how many times each ingredient has been used
-- **Star Ingredient**: Dashboard widget that shows the most-used ingredient per category
-- **Sequential IDs**: Each ingredient gets a unique categorical ID (100s for Character, 200s for Clothing, etc.)
-- **Prompt history**: Every confirmed prompt is logged; browse all history in the History page, view details, copy or re-generate any past prompt
-- **Activity summary**: History shows total prompts, prompts used today, and prompts used this week
-- **Ingredient search**: Debounced search (300ms) that waits until you finish typing (simulates a network request)
-- **Image preview**: Generates an image from the current prompt via the Hugging Face API (FLUX.1-schnell), with confirmation before consuming the API; requires an API key in Settings
-- **Reset generator**: Restores the Generate screen to its initial state (clears pins, textarea, and preview)
-- **Localization**: Full English / Spanish support via i18next
-- **Date formatting**: Timestamps are formatted with Day.js (e.g. `YYYY-MM-DD HH:mm` in History)
-- **Import / Export**: Download all ingredients as JSON and restore them later
-
-## Tech Stack
-
-| Tool | Purpose |
-|---|---|
-| **React 18** | UI framework |
-| **Vite 5** | Build tool |
-| **Bootstrap 5** | CSS framework (CDN) |
-| **Recharts** | Stacked bar chart |
-| **sonner** | Toast notifications |
-| **localforage** | Client-side storage (IndexedDB) |
-| **react-router-dom** | Client-side routing (HashRouter) |
-| **i18next / react-i18next** | Localization (English / Spanish) |
-| **Day.js** | Date formatting |
-| **@huggingface/inference** | Image preview generation (FLUX.1-schnell) |
+- **Endless prompt ideas** — one click combines random ingredients across 6 categories (Character, Clothing, Pose, Location, Camera Settings, Technique) into a ready-to-use photo prompt.
+- **Break out of creative ruts** — frequency-aware randomness favors your least-used ingredients, so you naturally explore your whole catalog.
+- **Iterate without starting over** — pin any ingredient to lock it while the rest randomize.
+- **Grow your catalog in seconds** — add ingredients inline, edit with a double-click, import a whole list from CSV, and export any category back to CSV anytime.
+- **Your work is always safe** — ingredients, history, and stats live in your browser; no accounts, no servers.
+- **Know what's working** — a dashboard shows usage per ingredient, your star ingredient in each category, and today/week activity totals.
+- **Never lose a great shot** — every copied prompt is logged; revisit, copy, or re-generate it from History.
+- **See it before you shoot** — optional AI image preview of any prompt (Hugging Face, your own API key).
+- **Built for every workflow** — English/Spanish, responsive on mobile and desktop, works offline.
 
 ## Getting Started
 
@@ -76,6 +50,7 @@ npm run preview
 │  Pose                        │
 │  Location                    │
 │  Camera Settings             │
+│  Technique                   │
 │                              │
 │  CONFIGURATION               │
 │  Settings                    │
@@ -90,6 +65,7 @@ npm run preview
 4. **Double-click** any ingredient text to edit it inline
 5. **Search**: The search field filters ingredients by text (case-insensitive), debounced 300ms. Empty results show a "no matches" message
 6. **Import from CSV**: Click **Import CSV** on a category page, choose a `.csv` file, and confirm — each line becomes a new ingredient (appended to existing ones). Use the "skip header row" option if your file has a header. Fields with commas must be quoted (`"text, with commas"`)
+7. **Export to CSV**: Click **Export CSV** to download the category's ingredients as `{categoryId}.csv` — the same format Import CSV reads, so you can back up or move a category anytime
 
 ### Image preview
 
@@ -112,18 +88,82 @@ The **Preview** button generates an image from the current prompt via the Huggin
 Each generated prompt gets a composite ID from the selected ingredient IDs:
 
 ```
-101-203-304-403-501
-│    │   │   │   └── Camera Settings ingredient
-│    │   │   └────── Location ingredient
-│    │   └────────── Pose ingredient
-│    └────────────── Clothing ingredient
-└─────────────────── Character ingredient
+101-203-304-403-501-601
+│    │   │   │   │   └── Technique ingredient
+│    │   │   │   └────── Camera Settings ingredient
+│    │   │   └────────── Location ingredient
+│    │   └────────────── Pose ingredient
+│    └────────────────── Clothing ingredient
+└─────────────────────── Character ingredient
 ```
 
 ### Import / Export
 
-- **Export**: Click *Download prompts.json* to save all ingredients as a JSON file
-- **Import**: Choose a `.json` file with the same structure, confirm when asked — replaces all existing ingredients
+- **Export CSV (per category)**: The **Export CSV** button on any category page downloads that category's ingredients as `{categoryId}.csv` — the same format Import CSV reads
+- **Export all (JSON)**: Click *Download prompts.json* in Settings to save every ingredient as a JSON file
+- **Import (JSON)**: Choose a `.json` file in Settings — replaces all existing ingredients; categories missing from the file are imported as empty
+
+## Tech Stack
+
+| Tool | Purpose |
+|---|---|
+| **React 18** | UI framework |
+| **Vite 5** | Build tool |
+| **Bootstrap 5** | CSS framework (CDN) |
+| **Recharts** | Stacked bar chart |
+| **sonner** | Toast notifications |
+| **localforage** | Client-side storage (IndexedDB) |
+| **react-router-dom** | Client-side routing (HashRouter) |
+| **i18next / react-i18next** | Localization (English / Spanish) |
+| **Day.js** | Date formatting |
+| **@huggingface/inference** | Image preview generation (FLUX.1-schnell) |
+
+### Implementation notes
+
+- Data is persisted with localforage (IndexedDB); API keys are stored separately under their own key
+- Each category uses sequential base IDs (100s–600s), producing composite prompt IDs like `101-201-301-401-501-601`
+- Prompt generation is frequency-weighted: least-used ingredients are more likely to be picked, and usage is only registered when you click **Copy**
+- The ingredient search is debounced (300ms) to wait until you finish typing
+- Timestamps are formatted with Day.js; Bootstrap 5 is served via CDN; stacked bars are colored by category hue (HSL)
+
+## Project structure
+
+```
+promptgen/
+├── samples/                # Ready-to-import CSV files (one per category, es_en naming)
+└── src/
+    ├── main.jsx                # Entry point
+    ├── App.jsx                 # HashRouter with 5 routes: /, /generate, /history, /list/:categoryId, /settings
+    ├── App.css                 # Global styles (Material 3 palette)
+    ├── i18n.js                 # i18next setup (English / Spanish)
+    ├── data/
+    │   └── categories.js       # Category definitions with base IDs
+    ├── hooks/
+    │   ├── useData.js          # localforage CRUD by id, prompt generation (inverse frequency), usage stats, import
+    │   ├── useApiKeys.js       # Hugging Face API key storage (localforage)
+    │   └── useDebouncedValue.js# Debounce hook for the ingredient search
+    ├── lib/
+    │   ├── dayjs.js            # Date formatting helpers (YYYY-MM-DD, YYYY-MM-DD HH:mm)
+    │   └── csv.js              # CSV parser/serializer for the per-category import/export
+    ├── contexts/
+    │   ├── DataContext.jsx     # Context provider: data, promptHistory, usageStats, generate/confirm/reset
+    │   └── ApiKeysContext.jsx  # Context provider: apiKeys, saveApiKey, deleteApiKey
+    ├── locales/
+    │   ├── en.json             # English translations
+    │   └── es.json             # Spanish translations
+    ├── views/
+    │   ├── Dashboard.jsx       # Stat cards, usage chart, Last Prompts and Star Ingredient widgets
+    │   ├── Generate.jsx        # ID pin toggles, Generate/Preview/Copy/Reset, preview confirmation modal
+    │   ├── History.jsx         # Activity summary + paginated history, view/copy/re-generate modal
+    │   ├── ListView.jsx        # Inline add/edit/delete by id + debounced search + CSV import/export per category
+    │   └── Settings.jsx        # API keys + JSON export/import with validation and confirm modal
+    └── components/
+        ├── Sidebar.jsx         # Navigation via react-router-dom (grouped sections)
+        ├── NavItem.jsx         # Sidebar link item
+        ├── StatCard.jsx        # Reusable stat card
+        ├── StarIngredient.jsx  # Most-used ingredient per category widget (composite prompt ID + modal)
+        └── LastPrompts.jsx     # 5 most recent prompts widget
+```
 
 ## Data model
 
@@ -136,6 +176,7 @@ Each generated prompt gets a composite ID from the selected ingredient IDs:
 | Pose | `pose` | 300 | 301, 302, 303… |
 | Location | `escena` | 400 | 401, 402, 403… |
 | Camera Settings | `camara` | 500 | 501, 502, 503… |
+| Technique | `tecnica` | 600 | 601, 602, 603… |
 
 ### localforage schema
 
@@ -146,10 +187,11 @@ Each generated prompt gets a composite ID from the selected ingredient IDs:
   "pose": [{ "id": 301, "text": "standing ready" }],
   "escena": [{ "id": 401, "text": "a dark forest" }],
   "camara": [{ "id": 501, "text": "low angle" }],
+  "tecnica": [{ "id": 601, "text": "watercolor splash" }],
   "promptHistory": [
     {
-      "id": "101-201-301-401-501",
-      "usedIds": { "personaje": 101, "vestimenta": 201, "pose": 301, "escena": 401, "camara": 501 },
+      "id": "101-201-301-401-501-601",
+      "usedIds": { "personaje": 101, "vestimenta": 201, "pose": 301, "escena": 401, "camara": 501, "tecnica": 601 },
       "timestamp": 1700000000000
     }
   ],
@@ -161,43 +203,6 @@ Each generated prompt gets a composite ID from the selected ingredient IDs:
 ```
 
 API keys are stored separately under a different localforage key (`promptgen_api_keys`).
-
-## Project structure
-
-```
-src/
-├── main.jsx                # Entry point
-├── App.jsx                 # HashRouter with 5 routes: /, /generate, /history, /list/:categoryId, /settings
-├── App.css                 # Global styles (Material 3 palette)
-├── i18n.js                 # i18next setup (English / Spanish)
-├── data/
-│   └── categories.js       # Category definitions with base IDs
-├── hooks/
-│   ├── useData.js          # localforage CRUD by id, prompt generation (inverse frequency), usage stats, import
-│   ├── useApiKeys.js       # Hugging Face API key storage (localforage)
-│   └── useDebouncedValue.js# Debounce hook for the ingredient search
-├── lib/
-│   ├── dayjs.js            # Date formatting helpers (YYYY-MM-DD, YYYY-MM-DD HH:mm)
-│   └── csv.js              # CSV parser for the per-category import
-├── contexts/
-│   ├── DataContext.jsx     # Context provider: data, promptHistory, usageStats, generate/confirm/reset
-│   └── ApiKeysContext.jsx  # Context provider: apiKeys, saveApiKey, deleteApiKey
-├── locales/
-│   ├── en.json             # English translations
-│   └── es.json             # Spanish translations
-├── views/
-│   ├── Dashboard.jsx       # Stat cards, usage chart, Last Prompts and Star Ingredient widgets
-│   ├── Generate.jsx        # ID pin toggles, Generate/Preview/Copy/Reset, preview confirmation modal
-│   ├── History.jsx         # Activity summary + paginated history, view/copy/re-generate modal
-│   ├── ListView.jsx        # Inline add/edit/delete by id + debounced search per category
-│   └── Settings.jsx        # API keys + JSON export/import with validation and confirm modal
-└── components/
-    ├── Sidebar.jsx         # Navigation via react-router-dom (grouped sections)
-    ├── NavItem.jsx         # Sidebar link item
-    ├── StatCard.jsx        # Reusable stat card
-    ├── StarIngredient.jsx  # Most-used ingredient per category widget
-    └── LastPrompts.jsx     # 5 most recent prompts widget
-```
 
 ## License
 

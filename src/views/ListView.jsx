@@ -6,6 +6,7 @@ import { useDataContext } from '../contexts/DataContext';
 import { CATEGORIES } from '../data/categories';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { parseCsv, toCsv } from '../lib/csv';
+import ActionCard from '../components/ActionCard';
 
 const PAGE_SIZE = 10;
 
@@ -32,7 +33,18 @@ export default function ListView() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [category.id, debouncedSearch]);
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setText('');
+    setSearch('');
+    setEditingId(null);
+    setEditValue('');
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+    setCsvModal(null);
+  }, [categoryId]);
 
   if (!category) return null;
 
@@ -171,41 +183,52 @@ export default function ListView() {
 
   return (
     <div>
-      <div className="card mb-3">
-        <div className="card-header">{t('list.addIngredient')}</div>
-        <div className="card-body py-2">
-          <div className="input-group">
-            <input
-              className="form-control"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-              placeholder={t('list.newIngredient')}
-            />
-            <input
-              ref={csvInputRef}
-              type="file"
-              accept=".csv,text/csv"
-              onChange={handleCsvChange}
-              className="d-none"
-            />
-            <button className="btn btn-primary" onClick={() => csvInputRef.current?.click()}>
-              <i className="fa-solid fa-file-csv me-1"></i>
-              {t('list.importCsv')}
-            </button>
-            <button className="btn btn-amber" onClick={handleSave} disabled={!text.trim()}>
-              {t('list.save')}
-            </button>
-          </div>
-        </div>
-      </div>
+      <ActionCard
+        title={t('list.addCategory', { category: t(`cat.${category.id}`) })}
+        actions={[
+          {
+            key: 'import-csv',
+            label: t('list.importCsv'),
+            icon: 'fa-file-csv',
+            variant: 'btn-primary',
+            onClick: () => csvInputRef.current?.click(),
+          },
+          {
+            key: 'save',
+            label: t('list.save'),
+            variant: 'btn-amber',
+            disabled: !text.trim(),
+            onClick: handleSave,
+          },
+        ]}
+      >
+        <input
+          ref={csvInputRef}
+          type="file"
+          accept=".csv,text/csv"
+          onChange={handleCsvChange}
+          className="d-none"
+        />
+        <textarea
+          className="form-control"
+          rows={2}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSave();
+            }
+          }}
+          placeholder={t('list.newIngredient')}
+        />
+      </ActionCard>
 
       {ingredients.length === 0 ? (
         <p className="text-muted">{t('list.noIngredients')}</p>
       ) : (
-        <div className="card">
-          <div className="card-body">
-            <div className="position-relative mb-3">
+        <ActionCard title={t('nav.ingredients')}>
+          <div className="position-relative mb-3">
               <input
                 className="form-control"
                 value={search}
@@ -308,8 +331,7 @@ export default function ListView() {
                 </div>
               </>
             )}
-          </div>
-        </div>
+        </ActionCard>
       )}
 
       {csvModal && (

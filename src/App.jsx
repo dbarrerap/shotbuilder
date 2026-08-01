@@ -6,6 +6,7 @@ import { DataProvider, useDataContext } from './contexts/DataContext';
 import { ApiKeysProvider, useApiKeysContext } from './contexts/ApiKeysContext';
 import { CATEGORIES } from './data/categories';
 import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import Dashboard from './views/Dashboard';
 import Generate from './views/Generate';
 import History from './views/History';
@@ -30,7 +31,7 @@ function AppContent() {
     : location.pathname === '/settings'
     ? t('settings.title')
     : category
-    ? `${t(`cat.${category.id}`)} \u2014 ${t('nav.ingredients')}`
+    ? t(`cat.${category.id}`)
     : '';
 
   if (loading || keysLoading) {
@@ -45,12 +46,7 @@ function AppContent() {
     <div>
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className="main-content">
-        <div className="view-header">
-          <button className="sidebar-toggle d-md-none" onClick={() => setSidebarOpen(true)}>
-            <i className="fa-solid fa-bars"></i>
-          </button>
-          <span className="h1 mb-0">{title}</span>
-        </div>
+        <Header title={title} onToggleSidebar={() => setSidebarOpen(true)} />
         <div className="p-4">
           <Routes>
             <Route path="/" element={<Dashboard />} />

@@ -101,7 +101,7 @@
   },
   "list": {
     "newIngredient": "Nuevo ingrediente...",
-    "addIngredient": "Agregar ingrediente",
+    "addCategory": "Agregar {{category}}",
     "search": "Buscar...",
     "save": "Guardar",
     "importCsv": "Importar CSV",

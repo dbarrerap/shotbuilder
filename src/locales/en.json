@@ -101,7 +101,7 @@
   },
   "list": {
     "newIngredient": "New ingredient...",
-    "addIngredient": "Add ingredient",
+    "addCategory": "Add {{category}}",
     "search": "Search...",
     "save": "Save",
     "importCsv": "Import CSV",

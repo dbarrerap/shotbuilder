@@ -63,6 +63,30 @@ export function useData() {
     await persistState(nextData, promptHistory, usageStats);
   }, [data, promptHistory, usageStats, persistState]);
 
+  const addIngredients = useCallback(async (category, texts) => {
+    const items = data[category];
+    const baseId = CATEGORIES.find(c => c.id === category).baseId;
+    let nextId = getNextId(items, baseId);
+    const added = texts.map(text => ({ id: nextId++, text }));
+    const nextData = {
+      ...data,
+      [category]: [...items, ...added],
+    };
+    setData(nextData);
+    await persistState(nextData, promptHistory, usageStats);
+    return added;
+  }, [data, promptHistory, usageStats, persistState]);
+
+  const deleteIngredients = useCallback(async (category, ids) => {
+    const idSet = new Set(ids);
+    const nextData = {
+      ...data,
+      [category]: data[category].filter(item => !idSet.has(item.id)),
+    };
+    setData(nextData);
+    await persistState(nextData, promptHistory, usageStats);
+  }, [data, promptHistory, usageStats, persistState]);
+
   const deleteIngredient = useCallback(async (category, id) => {
     const nextData = {
       ...data,
@@ -144,7 +168,7 @@ export function useData() {
 
   return {
     data, loading, lastPrompt, lastPromptId, lastPicks,
-    addIngredient, deleteIngredient, editIngredient, importIngredients, generatePrompt, confirmPromptUse, resetPrompt,
+    addIngredient, addIngredients, deleteIngredient, deleteIngredients, editIngredient, importIngredients, generatePrompt, confirmPromptUse, resetPrompt,
     hasEmptyCategory, promptHistory, usageStats,
   };
 }

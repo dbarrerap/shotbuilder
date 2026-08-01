@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useDataContext } from '../contexts/DataContext';
 import { CATEGORIES } from '../data/categories';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { parseCsv, toCsv } from '../lib/csv';
 
 const PAGE_SIZE = 10;
 
@@ -12,7 +13,7 @@ export default function ListView() {
   const { t } = useTranslation();
   const { categoryId } = useParams();
   const navigate = useNavigate();
-  const { data, addIngredient, editIngredient, deleteIngredient } = useDataContext();
+  const { data, addIngredient, addIngredients, deleteIngredients, editIngredient, deleteIngredient } = useDataContext();
 
   const category = CATEGORIES.find(c => c.id === categoryId);
   const ingredients = data[categoryId] || [];
@@ -24,6 +25,8 @@ export default function ListView() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [csvModal, setCsvModal] = useState(null);
+  const csvInputRef = useRef(null);
 
   const debouncedSearch = useDebouncedValue(search);
 
@@ -90,6 +93,69 @@ export default function ListView() {
     setDeleteTarget(null);
   };
 
+  const handleCsvChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const raw = await file.text();
+      const rows = parseCsv(raw);
+      if (rows.length === 0) {
+        toast.error(t('list.csvEmpty'));
+      } else {
+        setCsvModal({ fileName: file.name, rows, skipFirst: false });
+      }
+    } catch {
+      toast.error(t('list.error'));
+    } finally {
+      e.target.value = '';
+    }
+  };
+
+  const confirmCsvImport = () => {
+    if (!csvModal) return;
+    const rows = csvModal.skipFirst ? csvModal.rows.slice(1) : csvModal.rows;
+    if (rows.length === 0) {
+      toast.error(t('list.csvEmpty'));
+      return;
+    }
+    const run = async () => {
+      const id = toast.loading(t('list.importing'));
+      try {
+        const added = await addIngredients(categoryId, rows);
+        setCsvModal(null);
+        setCurrentPage(1);
+        toast.dismiss(id);
+        toast.success(t('list.csvImported', { count: added.length }), {
+          action: {
+            label: t('list.undo'),
+            onClick: () => {
+              deleteIngredients(categoryId, added.map(item => item.id));
+              setCurrentPage(1);
+              toast.success(t('list.undoDone'));
+            },
+          },
+        });
+      } catch {
+        toast.dismiss(id);
+        toast.error(t('list.error'));
+      }
+    };
+    run();
+  };
+
+  const handleDownloadSample = () => {
+    const csv = toCsv(['a knight', 'a pirate', 'a wizard']);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sample.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const q = debouncedSearch.trim().toLowerCase();
   const filtered = ingredients.filter(item => item.text.toLowerCase().includes(q));
 
@@ -106,8 +172,9 @@ export default function ListView() {
   return (
     <div>
       <div className="card mb-3">
+        <div className="card-header">{t('list.addIngredient')}</div>
         <div className="card-body py-2">
-          <div className="d-flex gap-2">
+          <div className="input-group">
             <input
               className="form-control"
               value={text}
@@ -115,7 +182,18 @@ export default function ListView() {
               onKeyDown={(e) => e.key === 'Enter' && handleSave()}
               placeholder={t('list.newIngredient')}
             />
-            <button className="btn btn-primary" onClick={handleSave} disabled={!text.trim()}>
+            <input
+              ref={csvInputRef}
+              type="file"
+              accept=".csv,text/csv"
+              onChange={handleCsvChange}
+              className="d-none"
+            />
+            <button className="btn btn-primary" onClick={() => csvInputRef.current?.click()}>
+              <i className="fa-solid fa-file-csv me-1"></i>
+              {t('list.importCsv')}
+            </button>
+            <button className="btn btn-amber" onClick={handleSave} disabled={!text.trim()}>
               {t('list.save')}
             </button>
           </div>
@@ -232,6 +310,57 @@ export default function ListView() {
             )}
           </div>
         </div>
+      )}
+
+      {csvModal && (
+        <>
+          <div className="modal-backdrop fade show" onClick={() => setCsvModal(null)} />
+          <div className="modal fade show d-block" tabIndex="-1">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">{t('list.importCsv')}</h5>
+                  <button type="button" className="btn-close" onClick={() => setCsvModal(null)} />
+                </div>
+                <div className="modal-body">
+                  <p className="mb-2">
+                    {t('list.importCsvBody', { count: csvModal.rows.length, file: csvModal.fileName })}
+                  </p>
+                  <div className="form-check mb-2">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="csv-skip-header"
+                      checked={csvModal.skipFirst}
+                      onChange={(e) => setCsvModal(prev => ({ ...prev, skipFirst: e.target.checked }))}
+                    />
+                    <label className="form-check-label" htmlFor="csv-skip-header">
+                      {t('list.csvSkipHeader')}
+                    </label>
+                  </div>
+                  <small className="text-body-secondary">{t('list.csvPreview')}</small>
+                  <pre className="bg-light border rounded p-2 mb-2" style={{ maxHeight: 120, overflow: 'auto', fontSize: '0.85rem', whiteSpace: 'pre-wrap' }}>
+                    {(csvModal.skipFirst ? csvModal.rows.slice(1) : csvModal.rows).slice(0, 5).join('\n')}
+                    {(csvModal.skipFirst ? csvModal.rows.slice(1) : csvModal.rows).length > 5 &&
+                      `\n${t('list.csvMore', { count: (csvModal.skipFirst ? csvModal.rows.slice(1) : csvModal.rows).length - 5 })}`}
+                  </pre>
+                  <button className="btn btn-link btn-sm p-0" onClick={handleDownloadSample}>
+                    <i className="fa-solid fa-download me-1"></i>
+                    {t('list.csvSample')}
+                  </button>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setCsvModal(null)}>
+                    {t('list.cancel')}
+                  </button>
+                  <button className="btn btn-primary" onClick={confirmCsvImport}>
+                    {t('list.import')} ({csvModal.skipFirst ? csvModal.rows.length - 1 : csvModal.rows.length})
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {showDeleteModal && (

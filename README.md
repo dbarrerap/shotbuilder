@@ -6,6 +6,7 @@ A React application for building and generating photo prompts by combining rando
 
 - **5 fixed categories**: Character, Clothing, Pose, Location, Camera Settings
 - **Ingredient management**: Add, edit (double-click), and delete ingredients per category
+- **CSV import**: Bulk-load ingredients into a category from a CSV file (one ingredient per line, quoted fields supported, optional header row)
 - **Prompt generation**: Picks a random ingredient from each category with frequency-weighted selection (least-used ingredients are more likely to be picked)
 - **Pin to keep**: Click any ingredient ID to pin it — pinned items stay fixed across generations
 - **Usage tracking**: Usage is only registered when you click **Copy**, not on every generate
@@ -88,6 +89,7 @@ npm run preview
 3. Click **Save** — stored with a sequential ID (e.g., `101`, `102`, `201`, `202`)
 4. **Double-click** any ingredient text to edit it inline
 5. **Search**: The search field filters ingredients by text (case-insensitive), debounced 300ms. Empty results show a "no matches" message
+6. **Import from CSV**: Click **Import CSV** on a category page, choose a `.csv` file, and confirm — each line becomes a new ingredient (appended to existing ones). Use the "skip header row" option if your file has a header. Fields with commas must be quoted (`"text, with commas"`)
 
 ### Image preview
 
@@ -175,7 +177,8 @@ src/
 │   ├── useApiKeys.js       # Hugging Face API key storage (localforage)
 │   └── useDebouncedValue.js# Debounce hook for the ingredient search
 ├── lib/
-│   └── dayjs.js            # Date formatting helpers (YYYY-MM-DD, YYYY-MM-DD HH:mm)
+│   ├── dayjs.js            # Date formatting helpers (YYYY-MM-DD, YYYY-MM-DD HH:mm)
+│   └── csv.js              # CSV parser for the per-category import
 ├── contexts/
 │   ├── DataContext.jsx     # Context provider: data, promptHistory, usageStats, generate/confirm/reset
 │   └── ApiKeysContext.jsx  # Context provider: apiKeys, saveApiKey, deleteApiKey

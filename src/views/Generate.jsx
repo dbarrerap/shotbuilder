@@ -8,9 +8,9 @@ import { InferenceClient } from '@huggingface/inference';
 import { CATEGORIES } from '../data/categories';
 
 export default function Generate() {
-  const { lastPicks, generatePrompt, confirmPromptUse, resetPrompt, hasEmptyCategory } = useDataContext();
+  const { data, lastPicks, generatePrompt, confirmPromptUse, resetPrompt, hasEmptyCategory } = useDataContext();
   const { apiKeys } = useApiKeysContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const [pinnedIds, setPinnedIds] = useState({});
   const [previewState, setPreviewState] = useState(null);
@@ -134,6 +134,16 @@ export default function Generate() {
     return `${cat ? t(`cat.${cat.id}`) : p.cat}: ${p.item.text}`;
   }).join('\n');
 
+  const totalCombinations = CATEGORIES.reduce((acc, c) => acc * data[c.id].length, 1);
+  const formattedCompact = new Intl.NumberFormat(i18n.language, {
+    notation: 'compact',
+    compactDisplay: 'short',
+  }).format(totalCombinations);
+  const formattedFull = new Intl.NumberFormat(i18n.language).format(totalCombinations);
+  const formula = CATEGORIES.map(c =>
+    `${t(`cat.${c.id}`)} ${data[c.id].length}`
+  ).join(' × ');
+
   return (
     <div>
       {hasEmptyCategory && (
@@ -146,6 +156,23 @@ export default function Generate() {
         <div className="alert alert-info mb-3 py-2">
           <i className="fa-solid fa-key me-1"></i>
           <a href="/#/settings" className="alert-link">{t('generate.configureKey')}</a> {t('generate.toUsePreview')}
+        </div>
+      )}
+
+      {totalCombinations > 0 && (
+        <div className="card mb-3">
+          <div className="card-body text-center">
+            <h5 className="card-title text-body-secondary fw-normal mb-2">
+              {t('generate.creativePotential')}
+            </h5>
+            <div className="display-6 fw-bold text-primary mb-2" title={formattedFull}>
+              {formattedCompact}
+            </div>
+            <code className="text-body-secondary">{formula}</code>
+            <p className="text-body-secondary mb-0 mt-2">
+              {t('generate.unlimitedIdeas')}
+            </p>
+          </div>
         </div>
       )}
 

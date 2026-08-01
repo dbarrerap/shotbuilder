@@ -31,6 +31,8 @@
   },
   "generate": {
     "title": "Prompt",
+    "creativePotential": "Creative Potential",
+    "unlimitedIdeas": "Endless combinations to inspire your shoots.",
     "promptId": "Prompt ID",
     "clickToPin": "click ID to pin",
     "generateToCreate": "Generate to create IDs...",

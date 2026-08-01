@@ -28,7 +28,7 @@
     "copy": "Copy"
   },
   "generate": {
-    "title": "Generate Prompt",
+    "title": "Prompt",
     "promptId": "Prompt ID",
     "clickToPin": "click ID to pin",
     "generateToCreate": "Generate to create IDs...",

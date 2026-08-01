@@ -186,39 +186,47 @@ export default function Generate() {
         />
       </div>
 
-      <div className="d-flex gap-2">
-        <button
-          className="btn btn-primary btn-lg btn-cta flex-fill"
-          onClick={handleGenerate}
-          disabled={hasEmptyCategory}
-        >
-          {t('generate.generate')}
-        </button>
-        <button
-          className="btn btn-outline-info btn-lg"
-          onClick={openPreviewModal}
-          disabled={!lastPicks.length || previewState === 'loading'}
-        >
-          {previewState === 'loading' ? (
-            <><span className="spinner-border spinner-border-sm me-1" /> {t('generate.loading')}</>
-          ) : (
-            t('generate.preview')
-          )}
-        </button>
-        <button
-          className="btn btn-amber btn-lg"
-          onClick={handleCopy}
-          disabled={!lastPicks.length}
-        >
-          {t('generate.copy')}
-        </button>
-        <button
-          className="btn btn-outline-secondary btn-lg"
-          onClick={handleReset}
-          disabled={!lastPicks.length && !Object.keys(pinnedIds).length}
-        >
-          {t('generate.reset')}
-        </button>
+      <div className="row g-2 generate-actions">
+        <div className="col-6 col-md">
+          <button
+            className="btn btn-primary btn-lg btn-cta w-100"
+            onClick={handleGenerate}
+            disabled={hasEmptyCategory}
+          >
+            {t('generate.generate')}
+          </button>
+        </div>
+        <div className="col-6 col-md">
+          <button
+            className="btn btn-outline-info btn-lg w-100"
+            onClick={openPreviewModal}
+            disabled={!lastPicks.length || previewState === 'loading'}
+          >
+            {previewState === 'loading' ? (
+              <><span className="spinner-border spinner-border-sm me-1" /> {t('generate.loading')}</>
+            ) : (
+              t('generate.preview')
+            )}
+          </button>
+        </div>
+        <div className="col-6 col-md">
+          <button
+            className="btn btn-amber btn-lg w-100"
+            onClick={handleCopy}
+            disabled={!lastPicks.length}
+          >
+            {t('generate.copy')}
+          </button>
+        </div>
+        <div className="col-6 col-md">
+          <button
+            className="btn btn-outline-secondary btn-lg w-100"
+            onClick={handleReset}
+            disabled={!lastPicks.length && !Object.keys(pinnedIds).length}
+          >
+            {t('generate.reset')}
+          </button>
+        </div>
       </div>
         </div>
       </div>

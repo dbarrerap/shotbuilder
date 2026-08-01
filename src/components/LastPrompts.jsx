@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDataContext } from '../contexts/DataContext';
 import { CATEGORIES } from '../data/categories';
@@ -7,6 +8,7 @@ import { formatDate } from '../lib/dayjs';
 export default function LastPrompts() {
   const { t } = useTranslation();
   const { data, promptHistory } = useDataContext();
+  const navigate = useNavigate();
   const lastPrompts = promptHistory.slice(-5).reverse();
   const [selectedEntry, setSelectedEntry] = useState(null);
 
@@ -40,6 +42,11 @@ export default function LastPrompts() {
                 </button>
               ))}
             </div>
+          )}
+          {lastPrompts.length > 0 && (
+            <button className="btn btn-link btn-sm p-0 mt-2" onClick={() => navigate('/history')}>
+              {t('dashboard.morePrompts')}
+            </button>
           )}
         </div>
       </div>

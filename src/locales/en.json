@@ -25,6 +25,7 @@
     "noPrompts": "No prompts used yet.",
     "starIngredient": "Star Ingredient",
     "starNoUsage": "No usage in this category yet.",
+    "morePrompts": "More...",
     "promptLabel": "Prompt {{id}}",
     "copy": "Copy"
   },

@@ -77,7 +77,7 @@ export default function Dashboard() {
     <div>
       <div className="row g-3 mb-4">
         {CATEGORIES.map(cat => (
-          <div key={cat.id} className="col-sm-6 col-xl">
+          <div key={cat.id} className="col-6 col-xl">
             <StatCard label={t(`cat.${cat.id}`)} value={data[cat.id].length} headerColor={CATEGORY_BORDER_COLORS[cat.id]} />
           </div>
         ))}
@@ -108,7 +108,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="row mt-4">
+      <div className="row g-3 mt-4">
         <div className="col-12 col-lg-5">
           <LastPrompts />
         </div>

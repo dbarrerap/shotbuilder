@@ -25,6 +25,7 @@
     "noPrompts": "A\u00fan no se usaron prompts.",
     "starIngredient": "Ingrediente Estrella",
     "starNoUsage": "A\u00fan no hay usos en esta categor\u00eda.",
+    "morePrompts": "Ver m\u00e1s...",
     "promptLabel": "Prompt {{id}}",
     "copy": "Copiar"
   },

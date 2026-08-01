@@ -168,6 +168,20 @@ export default function ListView() {
     URL.revokeObjectURL(url);
   };
 
+  const handleExportCsv = () => {
+    const csv = toCsv(ingredients.map(item => item.text));
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${category.id}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(t('list.csvExported'));
+  };
+
   const q = debouncedSearch.trim().toLowerCase();
   const filtered = ingredients.filter(item => item.text.toLowerCase().includes(q));
 
@@ -192,6 +206,14 @@ export default function ListView() {
             icon: 'fa-file-csv',
             variant: 'btn-primary',
             onClick: () => csvInputRef.current?.click(),
+          },
+          {
+            key: 'export-csv',
+            label: t('list.exportCsv'),
+            icon: 'fa-download',
+            variant: 'btn-outline-secondary',
+            disabled: ingredients.length === 0,
+            onClick: handleExportCsv,
           },
           {
             key: 'save',

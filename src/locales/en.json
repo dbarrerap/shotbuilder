@@ -105,6 +105,8 @@
     "search": "Search...",
     "save": "Save",
     "importCsv": "Import CSV",
+    "exportCsv": "Export CSV",
+    "csvExported": "CSV exported",
     "import": "Import",
     "importCsvBody": "{{count}} rows detected in \"{{file}}\". They will be added to this category.",
     "csvSkipHeader": "First row is a header (skip it)",

@@ -105,6 +105,8 @@
     "search": "Buscar...",
     "save": "Guardar",
     "importCsv": "Importar CSV",
+    "exportCsv": "Exportar CSV",
+    "csvExported": "CSV exportado",
     "import": "Importar",
     "importCsvBody": "Se detectaron {{count}} filas en \"{{file}}\". Se agregar\u00e1n a esta categor\u00eda.",
     "csvSkipHeader": "La primera fila es encabezado (omitirla)",

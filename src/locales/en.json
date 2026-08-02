@@ -60,6 +60,7 @@
     "toUsePreview": "to use the Preview feature.",
     "emptyCategory": "Add at least one ingredient to each category before generating.",
     "generatedPreview": "Generated preview",
+    "downloadPreview": "Download image",
     "modelUnavailable": "The selected model is currently unavailable. Try another model or switch back to FLUX.1-schnell."
   },
   "history": {

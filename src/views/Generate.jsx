@@ -32,7 +32,7 @@ function friendlyError(err) {
 }
 
 export default function Generate() {
-  const { data, lastPicks, generatePrompt, confirmPromptUse, resetPrompt, hasEmptyCategory } = useDataContext();
+  const { data, lastPicks, lastPromptId, generatePrompt, confirmPromptUse, resetPrompt, hasEmptyCategory } = useDataContext();
   const { apiKeys, previewModel } = useApiKeysContext();
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -291,7 +291,18 @@ export default function Generate() {
         <div className="mt-3">
           <div className="card">
             <div className="card-body text-center">
-              <img src={previewState} alt={t('generate.generatedPreview')} className="img-fluid rounded" style={{ maxHeight: 512 }} />
+              <div className="position-relative d-inline-block preview-frame">
+                <img src={previewState} alt={t('generate.generatedPreview')} className="img-fluid rounded" style={{ maxHeight: 512 }} />
+                <a
+                  className="preview-download"
+                  href={previewState}
+                  download={`${lastPromptId || 'preview'}.png`}
+                  title={t('generate.downloadPreview')}
+                  aria-label={t('generate.downloadPreview')}
+                >
+                  <i className="fa-solid fa-download" />
+                </a>
+              </div>
             </div>
           </div>
         </div>

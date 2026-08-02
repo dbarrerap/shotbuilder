@@ -121,6 +121,10 @@
     },
     "deleted": "Data deleted"
   },
+  "modelSelect": {
+    "search": "Search...",
+    "noMatches": "No matches"
+  },
   "list": {
     "newIngredient": "New ingredient...",
     "addCategory": "Add {{category}}",

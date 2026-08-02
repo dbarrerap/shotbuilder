@@ -7,6 +7,7 @@ import { useDataContext } from '../contexts/DataContext';
 import { useApiKeysContext } from '../contexts/ApiKeysContext';
 import { CATEGORIES } from '../data/categories';
 import { PREVIEW_MODELS, DEFAULT_PREVIEW_MODEL } from '../data/previewModels';
+import SelectCombobox from '../components/SelectCombobox';
 
 const SERVICES = [
   { id: 'huggingface', label: 'Hugging Face', icon: 'fa-solid fa-h', link: 'https://huggingface.co/settings/tokens' },
@@ -223,16 +224,16 @@ export default function Settings() {
                     <label className="form-label mb-0" style={{ minWidth: 120 }}>
                       {t('settings.previewModel')}
                     </label>
-                    <select
-                      className="form-select form-select-sm flex-grow-1"
-                      style={{ minWidth: 0, maxWidth: 280 }}
+                    <SelectCombobox
+                      id="preview-model"
+                      options={PREVIEW_MODELS}
                       value={previewModel || DEFAULT_PREVIEW_MODEL}
-                      onChange={(e) => setPreviewModel(e.target.value)}
-                    >
-                      {PREVIEW_MODELS.map(m => (
-                        <option key={m.id} value={m.id}>{m.label}</option>
-                      ))}
-                    </select>
+                      onChange={setPreviewModel}
+                      placeholder={t('settings.previewModel')}
+                      searchPlaceholder={t('modelSelect.search')}
+                      emptyLabel={t('modelSelect.noMatches')}
+                      style={{ minWidth: 0, maxWidth: 280, flexGrow: 1 }}
+                    />
                   </div>
                 )}
               </Fragment>

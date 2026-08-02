@@ -121,6 +121,10 @@
     },
     "deleted": "Datos eliminados"
   },
+  "modelSelect": {
+    "search": "Buscar...",
+    "noMatches": "Sin resultados"
+  },
   "list": {
     "newIngredient": "Nuevo ingrediente...",
     "addCategory": "Agregar {{category}}",

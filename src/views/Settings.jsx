@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Fragment } from 'react';
 import { toast } from 'sonner';
 import { useTranslation, Trans } from 'react-i18next';
 import i18n from '../i18n';
@@ -6,6 +6,7 @@ import localforage from 'localforage';
 import { useDataContext } from '../contexts/DataContext';
 import { useApiKeysContext } from '../contexts/ApiKeysContext';
 import { CATEGORIES } from '../data/categories';
+import { PREVIEW_MODELS, DEFAULT_PREVIEW_MODEL } from '../data/previewModels';
 
 const SERVICES = [
   { id: 'huggingface', label: 'Hugging Face', icon: 'fa-solid fa-h', link: 'https://huggingface.co/settings/tokens' },
@@ -35,13 +36,14 @@ function validateImported(raw) {
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { data, importIngredients } = useDataContext();
-  const { apiKeys, saveApiKey, deleteApiKey } = useApiKeysContext();
+  const { data, importIngredients, clearData } = useDataContext();
+  const { apiKeys, saveApiKey, deleteApiKey, clearApiKeys, previewModel, setPreviewModel } = useApiKeysContext();
   const fileRef = useRef(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importData, setImportData] = useState(null);
   const [lang, setLang] = useState('en');
   const [newKeys, setNewKeys] = useState({});
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     localforage.getItem('promptgen_lang').then(saved => {
@@ -105,6 +107,29 @@ export default function Settings() {
     });
   };
 
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    const run = async () => {
+      const id = toast.loading(t('settings.deleting'));
+      try {
+        if (deleteTarget === 'prompts' || deleteTarget === 'all') {
+          await clearData();
+        }
+        if (deleteTarget === 'settings' || deleteTarget === 'all') {
+          await clearApiKeys();
+          setLang('en');
+        }
+        toast.dismiss(id);
+        toast.success(t('settings.deleted'));
+      } catch {
+        toast.dismiss(id);
+        toast.error(t('settings.error'));
+      }
+    };
+    run();
+    setDeleteTarget(null);
+  };
+
   const handleSaveKey = (serviceId) => {
     const key = (newKeys[serviceId] || '').trim();
     if (!key) {
@@ -158,40 +183,59 @@ export default function Settings() {
           {SERVICES.map(service => {
             const hasKey = !!apiKeys[service.id];
             return (
-              <div key={service.id} className="d-flex align-items-center gap-2 mt-3 pt-3 border-top">
-                <i className={`${service.icon} fs-5`}></i>
-                <div className="flex-fill">
-                  <div className="fw-medium">{service.label}</div>
-                  <a href={service.link} target="_blank" rel="noopener noreferrer" className="text-body-secondary" style={{ fontSize: '0.8rem' }}>
-                    {t('settings.getApiKey')} <i className="fa-solid fa-arrow-up-right-from-squares"></i>
-                  </a>
-                </div>
-                {hasKey ? (
-                  <div className="d-flex align-items-center gap-2">
-                    <code className="text-body-secondary" style={{ fontSize: '0.8rem' }}>
-                      {apiKeys[service.id].substring(0, 8)}...
-                    </code>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteKey(service.id)}>
-                      {t('settings.delete')}
-                    </button>
+              <Fragment key={service.id}>
+                <div className="d-flex align-items-center gap-2 mt-3 pt-3 border-top">
+                  <i className={`${service.icon} fs-5`}></i>
+                  <div className="flex-fill">
+                    <div className="fw-medium">{service.label}</div>
+                    <a href={service.link} target="_blank" rel="noopener noreferrer" className="text-body-secondary" style={{ fontSize: '0.8rem' }}>
+                      {t('settings.getApiKey')} <i className="fa-solid fa-arrow-up-right-from-squares"></i>
+                    </a>
                   </div>
-                ) : (
-                  <div className="d-flex gap-2">
-                    <input
-                      type="password"
-                      className="form-control form-control-sm"
-                      style={{ width: 200 }}
-                      placeholder="hf_..."
-                      value={newKeys[service.id] || ''}
-                      onChange={(e) => setNewKeys(prev => ({ ...prev, [service.id]: e.target.value }))}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSaveKey(service.id)}
-                    />
-                    <button className="btn btn-primary btn-sm" onClick={() => handleSaveKey(service.id)} disabled={!newKeys[service.id]?.trim()}>
-                      {t('settings.save')}
-                    </button>
+                  {hasKey ? (
+                    <div className="d-flex align-items-center gap-2">
+                      <code className="text-body-secondary" style={{ fontSize: '0.8rem' }}>
+                        {apiKeys[service.id].substring(0, 8)}...
+                      </code>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteKey(service.id)}>
+                        {t('settings.delete')}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="d-flex gap-2">
+                      <input
+                        type="password"
+                        className="form-control form-control-sm"
+                        style={{ width: 200 }}
+                        placeholder="hf_..."
+                        value={newKeys[service.id] || ''}
+                        onChange={(e) => setNewKeys(prev => ({ ...prev, [service.id]: e.target.value }))}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveKey(service.id)}
+                      />
+                      <button className="btn btn-primary btn-sm" onClick={() => handleSaveKey(service.id)} disabled={!newKeys[service.id]?.trim()}>
+                        {t('settings.save')}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {service.id === 'huggingface' && (
+                  <div className="d-flex align-items-center gap-2 mt-2">
+                    <label className="form-label mb-0" style={{ minWidth: 120 }}>
+                      {t('settings.previewModel')}
+                    </label>
+                    <select
+                      className="form-select form-select-sm"
+                      style={{ maxWidth: 280 }}
+                      value={previewModel || DEFAULT_PREVIEW_MODEL}
+                      onChange={(e) => setPreviewModel(e.target.value)}
+                    >
+                      {PREVIEW_MODELS.map(m => (
+                        <option key={m.id} value={m.id}>{m.label}</option>
+                      ))}
+                    </select>
                   </div>
                 )}
-              </div>
+              </Fragment>
             );
           })}
         </div>
@@ -228,6 +272,24 @@ export default function Settings() {
             onChange={handleFileChange}
             className="d-block"
           />
+
+          <hr />
+
+          <h6 className="fw-medium">{t('settings.deleteData')}</h6>
+          <p className="text-body-secondary">
+            {t('settings.deleteDataDesc')}
+          </p>
+          <div className="d-flex flex-wrap gap-2">
+            <button className="btn btn-outline-danger" onClick={() => setDeleteTarget('prompts')}>
+              {t('settings.deletePrompts')}
+            </button>
+            <button className="btn btn-outline-danger" onClick={() => setDeleteTarget('settings')}>
+              {t('settings.deleteSettings')}
+            </button>
+            <button className="btn btn-danger" onClick={() => setDeleteTarget('all')}>
+              {t('settings.deleteAll')}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -252,6 +314,35 @@ export default function Settings() {
                   </button>
                   <button className="btn btn-danger" onClick={confirmImport}>
                     {t('settings.import')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {deleteTarget && (
+        <>
+          <div className="modal-backdrop fade show" />
+          <div className="modal fade show d-block" tabIndex="-1">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">{t('settings.deleteDataTitle')}</h5>
+                  <button type="button" className="btn-close" onClick={() => setDeleteTarget(null)} />
+                </div>
+                <div className="modal-body">
+                  <p className="mb-0">
+                    {t(`settings.deleteBody.${deleteTarget}`)}
+                  </p>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setDeleteTarget(null)}>
+                    {t('settings.cancel')}
+                  </button>
+                  <button className="btn btn-danger" onClick={confirmDelete}>
+                    {t('settings.delete')}
                   </button>
                 </div>
               </div>

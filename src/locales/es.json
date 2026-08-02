@@ -27,7 +27,11 @@
     "starNoUsage": "A\u00fan no hay usos en esta categor\u00eda.",
     "morePrompts": "Ver m\u00e1s...",
     "promptLabel": "Prompt {{id}}",
-    "copy": "Copiar"
+    "copy": "Copiar",
+    "promptsThisMonth": "Prompts por mes",
+    "prompts": "Prompts",
+    "prevMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente"
   },
   "generate": {
     "title": "Prompt",
@@ -55,7 +59,8 @@
     "configureKey": "Configura una clave de API de Hugging Face",
     "toUsePreview": "para usar la previsualizaci\u00f3n.",
     "emptyCategory": "Agrega al menos un ingrediente a cada categor\u00eda antes de generar.",
-    "generatedPreview": "Previsualizaci\u00f3n generada"
+    "generatedPreview": "Previsualizaci\u00f3n generada",
+    "modelUnavailable": "El modelo seleccionado no est\u00e1 disponible en este momento. Prueba otro modelo o vuelve a FLUX.1-schnell."
   },
   "history": {
     "title": "Historial",
@@ -77,6 +82,7 @@
     "language": "Idioma",
     "apiKeys": "Claves de API",
     "getApiKey": "Obtener clave API",
+    "previewModel": "Modelo de preview",
     "delete": "Eliminar",
     "save": "Guardar",
     "enterApiKey": "Ingresa una clave de API",
@@ -101,7 +107,19 @@
     "missingData": "Falta el objeto \"data\"",
     "missingCategory": "Categor\u00eda faltante o inv\u00e1lida: {{label}}",
     "invalidItem": "Elemento inv\u00e1lido en \"{{label}}\": cada elemento necesita \"id\" (n\u00famero) y \"text\" (texto)",
-    "invalidJson": "Archivo JSON inv\u00e1lido"
+    "invalidJson": "Archivo JSON inv\u00e1lido",
+    "deleteData": "Eliminar datos",
+    "deleteDataDesc": "Elimina permanentemente datos de este navegador.",
+    "deletePrompts": "Borrar prompts",
+    "deleteSettings": "Borrar configuraciones",
+    "deleteAll": "Borrar todo",
+    "deleteDataTitle": "Confirmar eliminaci\u00f3n",
+    "deleteBody": {
+      "all": "Esto eliminar\u00e1 permanentemente todos los ingredientes, el historial de prompts, las estad\u00edsticas de uso y las claves de API, y restablecer\u00e1 el idioma a ingl\u00e9s. Esta acci\u00f3n no se puede deshacer.",
+      "prompts": "Esto eliminar\u00e1 permanentemente todos los ingredientes, el historial de prompts y las estad\u00edsticas de uso. Esta acci\u00f3n no se puede deshacer.",
+      "settings": "Esto eliminar\u00e1 permanentemente tus claves de API y restablecer\u00e1 el idioma a ingl\u00e9s. Esta acci\u00f3n no se puede deshacer."
+    },
+    "deleted": "Datos eliminados"
   },
   "list": {
     "newIngredient": "Nuevo ingrediente...",

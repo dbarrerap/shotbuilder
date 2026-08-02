@@ -1,4 +1,6 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import dayjs from 'dayjs';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDataContext } from '../contexts/DataContext';
 import { CATEGORIES } from '../data/categories';
@@ -53,9 +55,14 @@ function CustomTooltip({ active, payload, label, ingredientMap }) {
 }
 
 export default function Dashboard() {
-  const { t } = useTranslation();
-  const { data, usageStats } = useDataContext();
+  const { t, i18n } = useTranslation();
+  const { data, usageStats, promptHistory } = useDataContext();
   const usedIds = Object.keys(usageStats).map(Number).sort((a, b) => a - b);
+
+  const [viewMonth, setViewMonth] = useState(() => dayjs().startOf('month'));
+  const currentMonth = dayjs().startOf('month');
+  const atCurrentMonth = viewMonth.isSame(currentMonth, 'month');
+  const monthLabel = new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' }).format(viewMonth.toDate());
 
   const ingredientMap = {};
   CATEGORIES.forEach(cat => {
@@ -72,6 +79,23 @@ export default function Dashboard() {
     });
     return point;
   });
+
+  const countsByDay = {};
+  promptHistory.forEach(entry => {
+    const d = dayjs(entry.timestamp);
+    if (d.isSame(viewMonth, 'month')) {
+      const day = d.date();
+      countsByDay[day] = (countsByDay[day] || 0) + 1;
+    }
+  });
+  const daysInMonth = viewMonth.daysInMonth();
+  const lineData = [
+    { day: 0, count: 0 },
+    ...Array.from({ length: daysInMonth }, (_, i) => ({
+      day: i + 1,
+      count: countsByDay[i + 1] || 0,
+    })),
+  ];
 
   return (
     <div>
@@ -107,6 +131,42 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      <div className="card mt-4">
+        <div className="card-body">
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <h5 className="card-title mb-0">{t('dashboard.promptsThisMonth')}</h5>
+            <div className="d-flex align-items-center gap-2">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-secondary"
+                aria-label={t('dashboard.prevMonth')}
+                onClick={() => setViewMonth(m => m.subtract(1, 'month'))}
+              >
+                <i className="fa-solid fa-chevron-left" />
+              </button>
+              <span className="fw-medium text-center text-nowrap" style={{ minWidth: '8rem' }}>{monthLabel}</span>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-secondary"
+                aria-label={t('dashboard.nextMonth')}
+                onClick={() => setViewMonth(m => m.add(1, 'month'))}
+                disabled={atCurrentMonth}
+              >
+                <i className="fa-solid fa-chevron-right" />
+              </button>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={lineData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <XAxis dataKey="day" tickFormatter={v => (v === 0 ? '' : v)} />
+              <YAxis allowDecimals={false} />
+              <Tooltip formatter={value => [value, t('dashboard.prompts')]} />
+              <Line type="monotone" dataKey="count" stroke="var(--md-primary)" strokeWidth={2} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
       <div className="row g-3 mt-4">
         <div className="col-12 col-lg-5">

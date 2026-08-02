@@ -269,7 +269,7 @@ export default function ListView() {
             ) : (
               <>
                 <table className="table table-hover align-middle mb-2">
-                  <thead className="table-light">
+                  <thead>
                     <tr>
                       <th style={{ width: '80px' }}>{t('list.hash')}</th>
                       <th>{t('list.ingredient')}</th>

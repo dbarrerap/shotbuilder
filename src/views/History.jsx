@@ -60,7 +60,7 @@ export default function History() {
         <div className="card">
           <div className="card-body">
             <table className="table table-hover align-middle mb-2">
-              <thead className="table-light">
+              <thead>
                 <tr>
                   <th>{t('history.promptId')}</th>
                   <th style={{ width: '12.5rem' }}>{t('history.date')}</th>

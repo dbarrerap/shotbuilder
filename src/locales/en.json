@@ -27,7 +27,11 @@
     "starNoUsage": "No usage in this category yet.",
     "morePrompts": "More...",
     "promptLabel": "Prompt {{id}}",
-    "copy": "Copy"
+    "copy": "Copy",
+    "promptsThisMonth": "Prompts by Month",
+    "prompts": "Prompts",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
   },
   "generate": {
     "title": "Prompt",
@@ -55,7 +59,8 @@
     "configureKey": "Configure a Hugging Face API key",
     "toUsePreview": "to use the Preview feature.",
     "emptyCategory": "Add at least one ingredient to each category before generating.",
-    "generatedPreview": "Generated preview"
+    "generatedPreview": "Generated preview",
+    "modelUnavailable": "The selected model is currently unavailable. Try another model or switch back to FLUX.1-schnell."
   },
   "history": {
     "title": "History",
@@ -77,6 +82,7 @@
     "language": "Language",
     "apiKeys": "API Keys",
     "getApiKey": "Get API key",
+    "previewModel": "Preview Model",
     "delete": "Delete",
     "save": "Save",
     "enterApiKey": "Enter an API key",
@@ -101,7 +107,19 @@
     "missingData": "Missing \"data\" object",
     "missingCategory": "Missing or invalid category: {{label}}",
     "invalidItem": "Invalid item in \"{{label}}\": each item needs \"id\" (number) and \"text\" (string)",
-    "invalidJson": "Invalid JSON file"
+    "invalidJson": "Invalid JSON file",
+    "deleteData": "Delete data",
+    "deleteDataDesc": "Permanently delete data from this browser.",
+    "deletePrompts": "Delete prompts",
+    "deleteSettings": "Delete settings",
+    "deleteAll": "Delete everything",
+    "deleteDataTitle": "Confirm deletion",
+    "deleteBody": {
+      "all": "This will permanently delete all ingredients, prompt history, usage statistics, API keys, and reset the language to English. This action cannot be undone.",
+      "prompts": "This will permanently delete all ingredients, prompt history, and usage statistics. This action cannot be undone.",
+      "settings": "This will permanently delete your API keys and reset the language to English. This action cannot be undone."
+    },
+    "deleted": "Data deleted"
   },
   "list": {
     "newIngredient": "New ingredient...",

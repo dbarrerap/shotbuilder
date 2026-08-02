@@ -165,11 +165,21 @@ export function useData() {
     setLastPicks([]);
   }, []);
 
+  const clearData = useCallback(async () => {
+    setData(DEFAULT_DATA);
+    setPromptHistory([]);
+    setUsageStats({});
+    setLastPrompt('');
+    setLastPromptId('');
+    setLastPicks([]);
+    await localforage.removeItem(STORAGE_KEY);
+  }, []);
+
   const hasEmptyCategory = CATEGORIES.some(c => data[c.id].length === 0);
 
   return {
     data, loading, lastPrompt, lastPromptId, lastPicks,
     addIngredient, addIngredients, deleteIngredient, deleteIngredients, editIngredient, importIngredients, generatePrompt, confirmPromptUse, resetPrompt,
-    hasEmptyCategory, promptHistory, usageStats,
+    hasEmptyCategory, promptHistory, usageStats, clearData,
   };
 }

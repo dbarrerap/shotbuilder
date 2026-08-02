@@ -6,10 +6,34 @@ import { useDataContext } from '../contexts/DataContext';
 import { useApiKeysContext } from '../contexts/ApiKeysContext';
 import { InferenceClient } from '@huggingface/inference';
 import { CATEGORIES } from '../data/categories';
+import { DEFAULT_PREVIEW_MODEL } from '../data/previewModels';
+
+function friendlyError(err) {
+  const msg = typeof err?.message === 'string' ? err.message : '';
+  if (/No Inference Provider available/i.test(msg)) {
+    return null;
+  }
+  const marker = 'got instead: ';
+  const idx = msg.indexOf(marker);
+  if (idx !== -1) {
+    const raw = msg.slice(idx + marker.length).trim();
+    try {
+      const parsed = JSON.parse(raw);
+      const detail = parsed?.detail;
+      if (Array.isArray(detail) && detail.length > 0 && detail[0]?.msg) {
+        return detail[0].msg;
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+  return msg || null;
+}
 
 export default function Generate() {
   const { data, lastPicks, generatePrompt, confirmPromptUse, resetPrompt, hasEmptyCategory } = useDataContext();
-  const { apiKeys } = useApiKeysContext();
+  const { apiKeys, previewModel } = useApiKeysContext();
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [pinnedIds, setPinnedIds] = useState({});
@@ -94,7 +118,7 @@ export default function Generate() {
     try {
       const client = new InferenceClient(key);
       const blob = await client.textToImage({
-        model: 'black-forest-labs/FLUX.1-schnell',
+        model: previewModel || DEFAULT_PREVIEW_MODEL,
         inputs: promptText,
       });
       if (ignoreResultRef.current) {
@@ -110,7 +134,7 @@ export default function Generate() {
     } catch (err) {
       if (!ignoreResultRef.current) {
         setPreviewState(null);
-        toast.error(err.message || t('generate.failedToGenerate'));
+        toast.error(friendlyError(err) || t('generate.modelUnavailable'));
       }
     } finally {
       pendingKeyRef.current = false;

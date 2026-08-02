@@ -71,6 +71,8 @@ npm run preview
 
 The **Preview** button generates an image from the current prompt via the Hugging Face API. Before any request is made, a confirmation explains what will happen. A Hugging Face API key must be configured in **Settings → API Keys**; otherwise Preview shows an error prompting you to configure one.
 
+The model used for previews is configurable in **Settings → API Keys → Preview Model**: **FLUX.1-schnell** (default), **Z-Image-Turbo**, or **Qwen-Image**. If a model is unavailable, Preview shows an error suggesting you try another model or switch back to the default.
+
 ### Generating prompts
 
 1. Ensure each category has at least one ingredient
@@ -103,6 +105,16 @@ Each generated prompt gets a composite ID from the selected ingredient IDs:
 - **Export all (JSON)**: Click *Download prompts.json* in Settings to save every ingredient as a JSON file
 - **Import (JSON)**: Choose a `.json` file in Settings — replaces all existing ingredients; categories missing from the file are imported as empty
 
+### Deleting data
+
+**Settings → Delete data** permanently removes data from this browser (no undo):
+
+- **Delete prompts** — removes all ingredients, prompt history, and usage statistics
+- **Delete settings** — removes API keys and resets the language to English
+- **Delete everything** — both of the above at once
+
+Each action shows a confirmation dialog before anything is deleted.
+
 ## Tech Stack
 
 | Tool | Purpose |
@@ -116,11 +128,11 @@ Each generated prompt gets a composite ID from the selected ingredient IDs:
 | **react-router-dom** | Client-side routing (HashRouter) |
 | **i18next / react-i18next** | Localization (English / Spanish) |
 | **Day.js** | Date formatting |
-| **@huggingface/inference** | Image preview generation (FLUX.1-schnell) |
+| **@huggingface/inference** | Image preview generation (model selectable in Settings) |
 
 ### Implementation notes
 
-- Data is persisted with localforage (IndexedDB); API keys are stored separately under their own key
+- Data is persisted with localforage (IndexedDB); API keys and the selected preview model are stored separately under their own keys
 - Each category uses sequential base IDs (100s–600s), producing composite prompt IDs like `101-201-301-401-501-601`
 - Prompt generation is frequency-weighted: least-used ingredients are more likely to be picked, and usage is only registered when you click **Copy**
 - The ingredient search is debounced (300ms) to wait until you finish typing
@@ -202,7 +214,7 @@ promptgen/
 }
 ```
 
-API keys are stored separately under a different localforage key (`promptgen_api_keys`).
+API keys and the selected preview model are stored separately under their own localforage keys (`promptgen_api_keys`, `promptgen_preview_model`).
 
 ## License
 

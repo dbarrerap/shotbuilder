@@ -127,6 +127,7 @@
   },
   "list": {
     "newIngredient": "New ingredient...",
+    "new": "New",
     "addCategory": "Add {{category}}",
     "search": "Search...",
     "save": "Save",
@@ -150,6 +151,7 @@
     "ingredient": "Ingredient",
     "doubleClick": "Double-click to edit",
     "sendToGenerate": "Pin in Generate",
+    "clearSearch": "Clear search",
     "showing": "Showing {{start}}–{{end}} of {{total}}",
     "prev": "\u00ab Prev",
     "next": "Next \u00bb",

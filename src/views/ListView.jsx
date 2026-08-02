@@ -28,6 +28,7 @@ export default function ListView() {
   const [editValue, setEditValue] = useState('');
   const [csvModal, setCsvModal] = useState(null);
   const csvInputRef = useRef(null);
+  const [showAddCard, setShowAddCard] = useState(false);
 
   const debouncedSearch = useDebouncedValue(search);
 
@@ -44,6 +45,7 @@ export default function ListView() {
     setShowDeleteModal(false);
     setDeleteTarget(null);
     setCsvModal(null);
+    setShowAddCard(false);
   }, [categoryId]);
 
   if (!category) return null;
@@ -54,6 +56,7 @@ export default function ListView() {
     const promise = addIngredient(categoryId, trimmed).then(() => {
       setText('');
       setCurrentPage(1);
+      setShowAddCard(false);
     });
     toast.promise(promise, {
       loading: t('list.saving'),
@@ -197,6 +200,16 @@ export default function ListView() {
 
   return (
     <div>
+      {!showAddCard && (
+        <div className="d-flex justify-content-end mb-3">
+          <button className="btn btn-amber" onClick={() => setShowAddCard(true)}>
+            <i className="fa-solid fa-plus me-1" />
+            {t('list.new')}
+          </button>
+        </div>
+      )}
+
+      {showAddCard && (
       <ActionCard
         title={t('list.addCategory', { category: t(`cat.${category.id}`) })}
         actions={[
@@ -214,6 +227,15 @@ export default function ListView() {
             variant: 'btn-outline-secondary',
             disabled: ingredients.length === 0,
             onClick: handleExportCsv,
+          },
+          {
+            key: 'cancel',
+            label: t('list.cancel'),
+            variant: 'btn-outline-secondary',
+            onClick: () => {
+              setShowAddCard(false);
+              setText('');
+            },
           },
           {
             key: 'save',
@@ -241,29 +263,42 @@ export default function ListView() {
               e.preventDefault();
               handleSave();
             }
+            if (e.key === 'Escape') {
+              setShowAddCard(false);
+              setText('');
+            }
           }}
           placeholder={t('list.newIngredient')}
         />
       </ActionCard>
+      )}
 
       {ingredients.length === 0 ? (
         <p className="text-muted">{t('list.noIngredients')}</p>
       ) : (
         <ActionCard title={t('nav.ingredients')}>
-          <div className="position-relative mb-3">
+          <div className="d-flex justify-content-end mb-3">
+            <div className="position-relative list-search">
+              <i className="fa-solid fa-magnifying-glass list-search-icon" aria-hidden="true" />
               <input
-                className="form-control"
+                type="search"
+                className="form-control form-control-sm list-search-input"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('list.search')}
-                style={{ paddingRight: '2rem' }}
               />
               {search !== debouncedSearch && (
-                <span className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary" aria-hidden="true">
+                <span className="list-search-spinner" aria-hidden="true">
                   <i className="fa-solid fa-spinner fa-spin" />
                 </span>
               )}
+              {search && (
+                <button type="button" className="list-search-clear" onClick={() => setSearch('')} aria-label={t('list.clearSearch')}>
+                  <i className="fa-solid fa-xmark" aria-hidden="true" />
+                </button>
+              )}
             </div>
+          </div>
             {filtered.length === 0 ? (
               <p className="text-muted mb-0">{t('list.noMatches')}</p>
             ) : (

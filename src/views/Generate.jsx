@@ -158,14 +158,19 @@ export default function Generate() {
     return `${cat ? t(`cat.${cat.id}`) : p.cat}: ${p.item.text}`;
   }).join('\n');
 
-  const totalCombinations = CATEGORIES.reduce((acc, c) => acc * data[c.id].length, 1);
+  const pinnedCountFor = (c) => {
+    if (pinnedIds[c.id] != null && data[c.id].some(i => i.id === pinnedIds[c.id])) return 1;
+    return data[c.id].length;
+  };
+
+  const totalCombinations = CATEGORIES.reduce((acc, c) => acc * pinnedCountFor(c), 1);
   const formattedCompact = new Intl.NumberFormat(i18n.language, {
     notation: 'compact',
     compactDisplay: 'short',
   }).format(totalCombinations);
   const formattedFull = new Intl.NumberFormat(i18n.language).format(totalCombinations);
   const formula = CATEGORIES.map(c =>
-    `${t(`cat.${c.id}`)} ${data[c.id].length}`
+    `${t(`cat.${c.id}`)} ${pinnedCountFor(c)}`
   ).join(' × ');
 
   return (

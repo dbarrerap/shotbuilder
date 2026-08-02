@@ -145,6 +145,7 @@
     "hash": "#",
     "ingredient": "Ingrediente",
     "doubleClick": "Doble clic para editar",
+    "sendToGenerate": "Fijar en Generar",
     "showing": "Mostrando {{start}}\u2013{{end}} de {{total}}",
     "prev": "\u00ab Anterior",
     "next": "Siguiente \u00bb",

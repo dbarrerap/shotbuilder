@@ -184,7 +184,7 @@ export default function Settings() {
             const hasKey = !!apiKeys[service.id];
             return (
               <Fragment key={service.id}>
-                <div className="d-flex align-items-center gap-2 mt-3 pt-3 border-top">
+                <div className="d-flex align-items-center flex-wrap gap-2 mt-3 pt-3 border-top">
                   <i className={`${service.icon} fs-5`}></i>
                   <div className="flex-fill">
                     <div className="fw-medium">{service.label}</div>
@@ -193,7 +193,7 @@ export default function Settings() {
                     </a>
                   </div>
                   {hasKey ? (
-                    <div className="d-flex align-items-center gap-2">
+                    <div className="d-flex align-items-center gap-2 col-12 col-sm-auto">
                       <code className="text-body-secondary" style={{ fontSize: '0.8rem' }}>
                         {apiKeys[service.id].substring(0, 8)}...
                       </code>
@@ -202,11 +202,11 @@ export default function Settings() {
                       </button>
                     </div>
                   ) : (
-                    <div className="d-flex gap-2">
+                    <div className="d-flex gap-2 col-12 col-sm-auto">
                       <input
                         type="password"
-                        className="form-control form-control-sm"
-                        style={{ width: 200 }}
+                        className="form-control form-control-sm flex-grow-1"
+                        style={{ flex: '1 1 auto', minWidth: 0, maxWidth: 240 }}
                         placeholder="hf_..."
                         value={newKeys[service.id] || ''}
                         onChange={(e) => setNewKeys(prev => ({ ...prev, [service.id]: e.target.value }))}
@@ -219,13 +219,13 @@ export default function Settings() {
                   )}
                 </div>
                 {service.id === 'huggingface' && (
-                  <div className="d-flex align-items-center gap-2 mt-2">
+                  <div className="d-flex align-items-center flex-wrap gap-2 mt-2">
                     <label className="form-label mb-0" style={{ minWidth: 120 }}>
                       {t('settings.previewModel')}
                     </label>
                     <select
-                      className="form-select form-select-sm"
-                      style={{ maxWidth: 280 }}
+                      className="form-select form-select-sm flex-grow-1"
+                      style={{ minWidth: 0, maxWidth: 280 }}
                       value={previewModel || DEFAULT_PREVIEW_MODEL}
                       onChange={(e) => setPreviewModel(e.target.value)}
                     >

@@ -145,6 +145,7 @@
     "hash": "#",
     "ingredient": "Ingredient",
     "doubleClick": "Double-click to edit",
+    "sendToGenerate": "Pin in Generate",
     "showing": "Showing {{start}}–{{end}} of {{total}}",
     "prev": "\u00ab Prev",
     "next": "Next \u00bb",

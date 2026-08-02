@@ -66,6 +66,7 @@ npm run preview
 5. **Search**: The search field filters ingredients by text (case-insensitive), debounced 300ms. Empty results show a "no matches" message
 6. **Import from CSV**: Click **Import CSV** on a category page, choose a `.csv` file, and confirm — each line becomes a new ingredient (appended to existing ones). Use the "skip header row" option if your file has a header. Fields with commas must be quoted (`"text, with commas"`)
 7. **Export to CSV**: Click **Export CSV** to download the category's ingredients as `{categoryId}.csv` — the same format Import CSV reads, so you can back up or move a category anytime
+8. **Pin in Generate**: The sparkles button on each ingredient row opens the Prompt screen with that ingredient pinned — the remaining categories are filled at random, ready to tweak, preview, or copy
 
 ### Image preview
 

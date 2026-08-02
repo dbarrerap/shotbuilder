@@ -273,7 +273,7 @@ export default function ListView() {
                     <tr>
                       <th style={{ width: '80px' }}>{t('list.hash')}</th>
                       <th>{t('list.ingredient')}</th>
-                      <th style={{ width: '80px' }}></th>
+                      <th style={{ width: '90px' }}></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -308,15 +308,24 @@ export default function ListView() {
                           )}
                         </td>
                         <td>
-                          <button
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => {
-                              setDeleteTarget({ id: item.id, text: item.text });
-                              setShowDeleteModal(true);
-                            }}
-                          >
-                            &times;
-                          </button>
+                          <div className="d-flex gap-1">
+                            <button
+                              className="btn btn-sm btn-outline-secondary"
+                              title={t('list.sendToGenerate')}
+                              onClick={() => navigate('/generate', { state: { pin: { [category.id]: item.id } } })}
+                            >
+                              <i className="fa-solid fa-wand-magic-sparkles" />
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => {
+                                setDeleteTarget({ id: item.id, text: item.text });
+                                setShowDeleteModal(true);
+                              }}
+                            >
+                              &times;
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
